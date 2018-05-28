@@ -1,0 +1,427 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Copyright (C) 2018 Theodore Chang
+%%
+%% This program is free software: you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation, either version 3 of the License, or
+%% (at your option) any later version.
+%%
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You should have received a copy of the GNU General Public License
+%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% structmech: A TikZ command set for structural mechanics drawings
+%                                           v1.0   by   tlc
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{structmech}[2018/05/29 v1.0 structmech: A TikZ command set for structural mechanics drawings]
+\RequirePackage{ifthen}
+\RequirePackage{kvoptions}
+\RequirePackage{tikz}
+\RequirePackage{xkeyval}
+\RequirePackage{xparse}
+\RequirePackage{xstring}
+\usetikzlibrary{calc,decorations.pathreplacing,positioning}
+\DeclareOptionX<structmech>{fill}[black]{\def\fillColor{#1}}
+\DeclareOptionX<structmech>{line}[black]{\def\lineColor{#1}}
+\DeclareOptionX<structmech>{node}[black]{\def\nodeColor{#1}}
+\DeclareOptionX<structmech>{axis}[black]{\def\axisColor{#1}}
+\DeclareOptionX<structmech>{rotation}[black]{\def\rotationColor{#1}}
+\DeclareOptionX<structmech>{convention}[sign]{\IfStrEq{#1}{sign}{\def\convention{sign}}{\def\convention{direction}}}
+\DeclareOptionX<structmech>{showvalue}[on]{\IfStrEq{#1}{on}{\def\showvalue{on}}{\def\showvalue{off}}}
+\DeclareOptionX<structmech>{absvalue}[off]{\IfStrEq{#1}{on}{\def\absvalue{on}}{\def\absvalue{off}}}
+\DeclareOptionX<structmech>{opacity}[.4]{\def\fillOpacity{#1}}
+\DeclareOptionX<structmech>{linewidth}[.4mm]{\def\lineWidth{#1}}
+\ExecuteOptionsX<structmech>{fill,line,node,axis,rotation,convention,showvalue,absvalue,opacity,linewidth}
+\ProcessOptionsX<structmech>
+\tikzset{
+  NOFILL/.style={fill=none,fill opacity=1},
+ DIAGRAM/.style={draw=\lineColor,fill=\fillColor,fill opacity=\fillOpacity},
+ROTATION/.style={draw=\rotationColor,line width=\lineWidth,->},
+   FIXED/.style={postaction={draw,decorate,decoration={border,pre length=1mm,post length=1mm,angle=-60,amplitude=1mm,segment length=1mm}}}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command Zero: Set options.
+% \setstructmech{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\setstructmech}{m}{\ExecuteOptionsX<structmech>{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 1: Label All Nodal Forces.
+% \NodalForce[1]{2}[3][4][5]{6}[7]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\NodalForce}{O{\nodeColor} m O{} O{} O{} G{0} O{1}}{
+\begin{scope}[rotate around={#6:(#2)},shift={(#2)},scale=#7]
+\IfEq{#3}{}
+    {\draw[#1,line width=\lineWidth,->](-1,0)--(-.2,0);}
+    {\IfEq{#3}{N}
+        {}
+        {\IfStrEq{\convention}{sign}
+            {\draw[#1,line width=\lineWidth,->](-1,0)--(-.2,0);\node[fill=none,#1]at(-1.4,0){\footnotesize$#3$};}
+            {\StrLeft{#3}{1}[\SS]\IfStrEq{\SS}{-}
+                {\draw[#1,line width=\lineWidth,->](-.2,0)--(-1,0);\node[fill=none,#1]at(-1.4,0){\footnotesize$\StrDel[1]{#3}{-}$};}
+                {\draw[#1,line width=\lineWidth,->](-1,0)--(-.2,0);\node[fill=none,#1]at(-1.4,0){\footnotesize$#3$};}
+            }
+        }
+    }
+\IfEq{#4}{}
+    {\draw[#1,line width=\lineWidth,->](0,-1)--(0,-.2);}
+    {\IfEq{#4}{N}
+        {}
+        {\IfStrEq{\convention}{sign}
+            {\draw[#1,line width=\lineWidth,->](0,-1)--(0,-.2);\node[fill=none,#1]at(0,-1.4){\footnotesize$#4$};}
+            {\StrLeft{#4}{1}[\SS]\IfStrEq{\SS}{-}
+                {\draw[#1,line width=\lineWidth,->](0,-.2)--(0,-1);\node[fill=none,#1]at(0,-1.4){\footnotesize$\StrDel[1]{#4}{-}$};}
+                {\draw[#1,line width=\lineWidth,->](0,-1)--(0,-.2);\node[fill=none,#1]at(0,-1.4){\footnotesize$#4$};}
+            }
+        }
+    }
+\IfEq{#5}{}
+    {\draw[#1,line width=\lineWidth,->](.2121,-.2121)arc[#1,start angle=-45,end angle=135,radius=3mm];}
+    {\IfEq{#5}{N}
+        {}
+        {\IfStrEq{\convention}{sign}
+            {\draw[#1,line width=\lineWidth,->](.2121,-.2121)arc[#1,start angle=-45,end angle=135,radius=3mm];\node[#1,fill=none]at(-.5303,.5303){\footnotesize$#5$};}
+            {\StrLeft{#5}{1}[\SS]\IfStrEq{\SS}{-}
+                {\draw[#1,line width=\lineWidth,<-](.2121,-.2121)arc[#1,start angle=-45,end angle=135,radius=3mm];\node[#1,fill=none]at(-.5303,.5303){\footnotesize$\StrDel[1]{#5}{-}$};}
+                {\draw[#1,line width=\lineWidth,->](.2121,-.2121)arc[#1,start angle=-45,end angle=135,radius=3mm];\node[#1,fill=none]at(-.5303,.5303){\footnotesize$#5$};}
+            }
+        }
+    }
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 2: Label Element Forces.
+% \BasicForce[1]{2}{3}{4}{5}[6][7][8]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\BasicForce}{O{3} m m m G{above=2mm} o o o}{
+\coordinate(A)at(#2);
+\coordinate(B)at(#3);
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\tikzset{
+EndRotA/.style={start angle=\Angle+90,end angle=\Angle+270,radius=3mm},
+EndRotB/.style={start angle=\Angle-90,end angle=\Angle+90,radius=3mm},
+EndRotC/.style={start angle=\Angle+270,end angle=\Angle+90,radius=3mm},
+EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
+}
+\IfEq{#1}{1}
+    {
+    \IfNoValueTF{#6}
+        {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$};}
+        {\IfStrEq{\convention}{sign}
+            {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$#6$};}
+            {\StrLeft{#6}{1}[\SS]\IfStrEq{\SS}{-}
+                {\draw[\axisColor,line width=\lineWidth,>-<](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$\StrDel[1]{#6}{-}$};}
+                {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$#6$};}
+            }
+        }
+    }
+    {}
+\IfEq{#1}{2L}
+    {
+    \draw[\axisColor,draw=none](#2)--(#3)node[midway,fill=none,#5]{$#4$};
+    \IfNoValueTF{#6}
+        {\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            {\StrLeft{#6}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle-90:.6)$){\footnotesize$\StrDel[1]{#6}{-}$};\draw[ROTATION]($(#2)+(\Angle-90:.3)$)arc[EndRotC];}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            }
+        }
+    }
+    {}
+\IfEq{#1}{2H}
+    {
+    \draw[\axisColor,draw=none](#2)--(#3)node[midway,fill=none,#5]{$#4$};
+    \IfNoValueTF{#6}
+        {\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            {\StrLeft{#6}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle+90:.6)$){\footnotesize$\StrDel[1]{#6}{-}$};\draw[ROTATION]($(#3)+(\Angle+90:.3)$)arc[EndRotD];}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            }
+        }
+    }
+    {}
+\IfEq{#1}{2}
+    {
+    \draw[\axisColor,draw=none](#2)--(#3)node[midway,fill=none,#5]{$#4$};
+    \IfNoValueTF{#6}
+        {\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            {\StrLeft{#6}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle-90:.6)$){\footnotesize$\StrDel[1]{#6}{-}$};\draw[ROTATION]($(#2)+(\Angle-90:.3)$)arc[EndRotC];}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#6$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            }
+        }
+    \IfNoValueTF{#7}
+        {\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#7$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            {\StrLeft{#7}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle+90:.6)$){\footnotesize$\StrDel[1]{#7}{-}$};\draw[ROTATION]($(#3)+(\Angle+90:.3)$)arc[EndRotD];}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#7$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            }
+        }
+    }
+    {}
+\IfEq{#1}{3}
+    {
+    \IfNoValueTF{#6}
+        {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$};}
+        {\IfStrEq{\convention}{sign}
+            {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$#6$};}
+            {\StrLeft{#6}{1}[\SS]\IfStrEq{\SS}{-}
+                {\draw[\axisColor,line width=\lineWidth,>-<](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$\StrDel[1]{#6}{-}$};}
+                {\draw[\axisColor,line width=\lineWidth,<->](#2)--(#3)node[midway,fill=none,#5]{$#4$}node[midway,fill=white]{\footnotesize$#6$};}
+            }
+        }
+    \IfNoValueTF{#7}
+        {\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#7$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            {\StrLeft{#7}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle-90:.6)$){\footnotesize$\StrDel[1]{#7}{-}$};\draw[ROTATION]($(#2)+(\Angle-90:.3)$)arc[EndRotC];}
+                {\node[fill=none,\rotationColor]at($(#2)+(\Angle+90:.6)$){\footnotesize$#7$};\draw[ROTATION]($(#2)+(\Angle+90:.3)$)arc[EndRotA];}
+            }
+        }
+    \IfNoValueTF{#8}
+        {\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+        {\IfStrEq{\convention}{sign}
+            {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#8$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            {\StrLeft{#8}{1}[\SS]\IfStrEq{\SS}{-}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle+90:.6)$){\footnotesize$\StrDel[1]{#8}{-}$};\draw[ROTATION]($(#3)+(\Angle+90:.3)$)arc[EndRotD];}
+                {\node[fill=none,\rotationColor]at($(#3)+(\Angle-90:.6)$){\footnotesize$#8$};\draw[ROTATION]($(#3)+(\Angle-90:.3)$)arc[EndRotB];}
+            }
+        }
+    }
+    {}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 3: Hinge support
+% \HingeSupport[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\HingeSupport}{O{0} m G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#3]
+\draw[line width=\lineWidth](0,0)--++(-.25,-.4)--++(.5,0)--cycle;
+\draw[line width=\lineWidth,FIXED](-.4,-.4)--++(.8,0);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 4: UDL
+% \UDL[1]{2}{3}[4]{5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\NewDocumentCommand{\UDL}{O{N} m m O{} G{1}}{
+\IfEq{#1}{F}{\def\FAC{-1}}{\def\FAC{1}}
+\coordinate(A)at(#2);
+\coordinate(B)at(#3);
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\Length\pgfmathresult
+\draw[\fillColor,fill=\fillColor,fill opacity=\fillOpacity](#2)--(#3)--($(#3)+(\Angle+\FAC*90:#5)$)--($(#2)+(\Angle+\FAC*90:#5)$)--cycle;
+\IfNoValueTF{#4}
+    {}
+    {\IfStrEq{\convention}{sign}
+        {\node[NOFILL]at($(#2)!.5!(#3)+(\Angle+\FAC*90:1.2*#5)$)[rotate=\Angle]{$#4$};}
+        {\StrLeft{#4}{1}[\SS]\IfStrEq{\SS}{-}
+            {\node[NOFILL]at($(#2)!.5!(#3)+(\Angle+\FAC*90:1.2*#5)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+            {\node[NOFILL]at($(#2)!.5!(#3)+(\Angle+\FAC*90:1.2*#5)$)[rotate=\Angle]{$#4$};}
+        }
+    }
+\foreach\x in{0,.1,.2,...,1}{
+\coordinate(C)at($(#2)!\x!(#3)$);
+\IfNoValueTF{#4}
+    {\draw[<-](C)--++($(\Angle+\FAC*90:#5)$);}
+    {\IfStrEq{\convention}{sign}
+        {\draw[<-](C)--++($(\Angle+\FAC*90:#5)$);}
+        {\StrLeft{#4}{1}[\SS]\IfStrEq{\SS}{-}
+            {\draw[->](C)--++($(\Angle+\FAC*90:#5)$);}
+            {\draw[<-](C)--++($(\Angle+\FAC*90:#5)$);}
+        }
+    }
+};
+}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 5: Fixed support
+% \FixedSupport[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\FixedSupport}{O{0} m G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#3]
+\draw[draw=\lineColor,line width=\lineWidth,FIXED](-.4,0)--++(.8,0);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 6: Roller support
+% \RollerSupport[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\RollerSupport}{O{0} m G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#3]
+\draw[draw=\lineColor,line width=\lineWidth]
+    (0,0)--++(-.25,-.3)--++(.5,0)--cycle
+    (-.15,-.35)circle(.05)
+    (+.15,-.35)circle(.05);
+\draw[draw=\lineColor,line width=\lineWidth,FIXED]
+    (-.4,-.4)--++(.8,0);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 7: Slider support
+% \SliderSupport[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\SliderSupport}{O{0} m G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#3]
+\draw[draw=\lineColor,line width=\lineWidth]
+    (-.25,-.1/#3)--++(.5,0)
+    (-.15,-.14/#3)--++(0,-.22)
+    (+.15,-.14/#3)--++(0,-.22);
+\draw[draw=\lineColor,line width=\lineWidth,fill=white]
+    (-.15,-.14/#3)circle(.04)++(0,-.22)circle(.04)
+    (+.15,-.14/#3)circle(.04)++(0,-.22)circle(.04);
+\draw[draw=\lineColor,line width=\lineWidth,FIXED]
+    (-.4,-.14/#3-.26)--++(.8,0);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 8: Sleeve support
+% \SleeveSupport[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\SleeveSupport}{O{0} m O{.4} G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#4]
+\draw[draw=\lineColor,line width=\lineWidth,FIXED](#3/2,-.4)--++(0,.8)(-#3/2,.4)--++(0,-.8);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 9: Coordinate system frame
+% \CoorOrigin[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\CoorOrigin}{O{0} m O{x} O{y} G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#5]
+\draw[draw=\lineColor,line width=\lineWidth,->](-.2,0)--++(1,0);\node[fill=none,draw=none]at(1.1,0){\footnotesize$#3$};
+\draw[draw=\lineColor,line width=\lineWidth,->](0,-.2)--++(0,1);\node[fill=none,draw=none]at(0,1.1){\footnotesize$#4$};
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 10: Rigid constraint
+% \Rigid[1]{2}{3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\Rigid}{O{0} m G{1}}{
+\begin{scope}[rotate around={#1:(#2)},shift={(#2)},scale=#3]
+\draw[draw=\fillColor,fill=\fillColor,rounded corners=.2mm](0,0)--(.25,.4)--(.4,.25)--cycle;
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 11: Linear Internal Force
+% \IForceA[1]{2}{3}{4}{5}{6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\NewDocumentCommand{\IForceA}{O{\fillColor} m m m m G{1}}{
+\coordinate(A)at(#2);
+\coordinate(B)at(#3);
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\coordinate(C)at($(A)+(\Angle+90:#4*#6)$);
+\coordinate(D)at($(B)+(\Angle-90:#5*#6)$);
+\draw[#1,fill=#1,fill opacity=\fillOpacity](A)--(C)--(D)--(B)--cycle;
+\pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\Length\pgfmathresult
+\IfStrEq{\showvalue}{on}{
+\StrLeft{#4}{1}[\SA]
+\IfStrEq{\SA}{-}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    }
+    {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+\StrLeft{#5}{1}[\SB]
+\IfStrEq{\SB}{-}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+    }
+    {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+}{}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 12: Parabolic Internal Force
+% \IForceB[1]{2}{3}{4}{5}{6}{7}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\IForceB}{O{\fillColor} m m m m m G{1}}{
+\coordinate(A)at(#2);\coordinate(B)at(#3);
+% original cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\coordinate(C)at($(A)+(\Angle+90:#4*#7)$);
+\coordinate(D)at($(B)+(\Angle-90:#5*#7)$);
+% inclined cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{C}{center}}{\pgfpointanchor{D}{center}}
+\let\AngleB\pgfmathresult
+% original length
+\pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\Length\pgfmathresult
+% inclined length
+\pgfpointdiff{\pgfpointanchor{C}{center}}{\pgfpointanchor{D}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\LengthB\pgfmathresult
+% center of inclined cord
+\coordinate(G)at($(C)+(\AngleB:\LengthB/2)$);
+\pgfmathsetmacro\height{#6*#7};
+\begin{scope}[rotate around={\AngleB:(G)},shift={(G)}]
+\draw[#1,fill=#1,fill opacity=\fillOpacity](-.5*\LengthB,0)parabola bend(0,\height)(.5*\LengthB,0)--++(\Angle-\AngleB+90:#5*#7)--($(-.5*\LengthB,0)+(\Angle-\AngleB-90:#4*#7)$)--cycle;
+\end{scope}
+\IfStrEq{\showvalue}{on}{
+\StrLeft{#4}{1}[\SA]
+\IfStrEq{\SA}{-}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    }
+    {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+\StrLeft{#5}{1}[\SB]
+\IfStrEq{\SB}{-}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+    }
+    {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+}{}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 13: Beam Deformation (perpendicular)
+% \BeamDeformP[1]{2}{3}{4}[5]{6}[7]{8}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\BeamDeformP}{O{\fillColor} m m m O{0} m O{0} G{1}}{
+\coordinate(A)at(#2);\coordinate(B)at(#3);
+% original cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\coordinate(C)at($(A)+(\Angle+90:#4*#8)$);
+\coordinate(D)at($(B)+(\Angle-90:#6*#8)$);
+\pgfmathanglebetweenpoints{\pgfpointanchor{C}{center}}{\pgfpointanchor{D}{center}}
+\let\AngleB\pgfmathresult
+\draw[#1,line width=\lineWidth](C)to[out=\AngleB+#5*#8,in=180+\AngleB+#7*#8](D);
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 13: Beam Deformation (Rotation Only)
+% \BeamDeformR[1]{2}{3}[4][5]{6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\BeamDeformR}{O{\fillColor} m m O{0} O{0} G{1}}{
+\coordinate(A)at(#2);\coordinate(B)at(#3);
+% original cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\draw[#1,line width=\lineWidth](A)to[out=\Angle+#4*#6,in=180+\Angle+#5*#6](B);
+}
+\makeatother
