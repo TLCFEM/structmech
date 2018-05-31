@@ -338,19 +338,42 @@ EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
 \let\Length\pgfmathresult
 \IfStrEq{\showvalue}{on}{
 \StrLeft{#4}{1}[\SA]
+% \IfStrEq{\SA}{-}
+%     {\IfStrEq{\absvalue}{on}
+%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+%     }
+%     {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+% \StrLeft{#5}{1}[\SB]
+% \IfStrEq{\SB}{-}
+%     {\IfStrEq{\absvalue}{on}
+%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+%     }
+%     {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
 \IfStrEq{\SA}{-}
-    {\IfStrEq{\absvalue}{on}
-        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
-        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
-    }
-    {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
-\StrLeft{#5}{1}[\SB]
-\IfStrEq{\SB}{-}
-    {\IfStrEq{\absvalue}{on}
-        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
-        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
-    }
-    {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+    {\node[NOFILL,\lineColor]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    {\node[NOFILL,\lineColor]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+\IfStrEq{#5}{0}{
+	\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};
+}{
+    \StrLeft{#5}{1}[\SB]
+    \IfStrEq{\SB}{-}
+        {\IfStrEq{\absvalue}{on}
+            {\IfStrEq{\SA}{-}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+            }
+            {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+        }
+        {\IfStrEq{\absvalue}{on}
+            {\IfStrEq{\SA}{-}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$-#5$};}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+            }
+            {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+        }
+}
 }{}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,19 +406,42 @@ EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
 \end{scope}
 \IfStrEq{\showvalue}{on}{
 \StrLeft{#4}{1}[\SA]
+% \IfStrEq{\SA}{-}
+%     {\IfStrEq{\absvalue}{on}
+%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+%     }
+%     {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+% \StrLeft{#5}{1}[\SB]
+% \IfStrEq{\SB}{-}
+%     {\IfStrEq{\absvalue}{on}
+%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+%     }
+%     {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
 \IfStrEq{\SA}{-}
-    {\IfStrEq{\absvalue}{on}
-        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
-        {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
-    }
-    {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
-\StrLeft{#5}{1}[\SB]
-\IfStrEq{\SB}{-}
-    {\IfStrEq{\absvalue}{on}
-        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
-        {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
-    }
-    {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+    {\node[NOFILL,\lineColor]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    {\node[NOFILL,\lineColor]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
+\IfStrEq{#5}{0}{
+	\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};
+}{
+    \StrLeft{#5}{1}[\SB]
+    \IfStrEq{\SB}{-}
+        {\IfStrEq{\absvalue}{on}
+            {\IfStrEq{\SA}{-}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+            }
+            {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+        }
+        {\IfStrEq{\absvalue}{on}
+            {\IfStrEq{\SA}{-}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$-#5$};}
+                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+            }
+            {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
+        }
+}
 }{}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
