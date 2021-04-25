@@ -1,5 +1,5 @@
 ```text
-Copyright (C) 2018 Theodore Chang
+Copyright (C) 2018-2021 Theodore Chang
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ Please feel free to redistribute and/or expand the functionality. Please contact
 
 tlc
 
-05/29/2018
+04/25/2021
 
 
 
