@@ -385,24 +385,16 @@ EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
 % original cord
 \pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
 \let\Angle\pgfmathresult
-\coordinate(C)at($(A)+(\Angle+90:#4*#7)$);
-\coordinate(D)at($(B)+(\Angle-90:#5*#7)$);
-% inclined cord
-\pgfmathanglebetweenpoints{\pgfpointanchor{C}{center}}{\pgfpointanchor{D}{center}}
-\let\AngleB\pgfmathresult
 % original length
 \pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
 \pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
 \let\Length\pgfmathresult
-% inclined length
-\pgfpointdiff{\pgfpointanchor{C}{center}}{\pgfpointanchor{D}{center}}
-\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
-\let\LengthB\pgfmathresult
-% center of inclined cord
-\coordinate(G)at($(C)+(\AngleB:\LengthB/2)$);
+\coordinate(G)at($(A)+(\Angle:\Length/2)$);
 \pgfmathsetmacro\height{#6*#7};
-\begin{scope}[rotate around={\AngleB:(G)},shift={(G)}]
-\draw[#1,fill=#1,fill opacity=\fillOpacity](-.5*\LengthB,0)parabola bend(0,\height)(.5*\LengthB,0)--++(\Angle-\AngleB+90:#5*#7)--($(-.5*\LengthB,0)+(\Angle-\AngleB-90:#4*#7)$)--cycle;
+\pgfmathsetmacro\lvla{#4*#7};
+\pgfmathsetmacro\lvlb{#5*#7};
+\begin{scope}[rotate around={\Angle:(G)},shift={(G)}]
+\draw[#1,fill=#1,fill opacity=\fillOpacity]plot[domain=-.5*\Length:.5*\Length,samples=100](\x,{\height-4./\Length/\Length*\height*\x*\x-\lvla/\Length*\x-\lvlb/\Length*\x+\lvla/2-\lvlb/2})--(B)--(A)--cycle;
 \end{scope}
 \IfStrEq{\showvalue}{on}{
 \StrLeft{#4}{1}[\SA]
