@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Copyright (C) 2018-2021 Theodore Chang
+%% Copyright (C) 2018-2023 Theodore Chang
 %%
 %% This program is free software: you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
@@ -15,17 +15,17 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % structmech: A TikZ command set for structural mechanics drawings
-%                                           v1.1   by   tlc
+%                                           v1.2   by   tlc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{structmech}[2021/04/25 v1.1 structmech: A TikZ command set for structural mechanics drawings]
+\ProvidesPackage{structmech}[2023/04/01 v1.2 structmech: A TikZ command set for structural mechanics drawings]
 \RequirePackage{ifthen}
 \RequirePackage{kvoptions}
 \RequirePackage{tikz}
 \RequirePackage{xkeyval}
 \RequirePackage{xparse}
 \RequirePackage{xstring}
-\usetikzlibrary{calc,decorations.pathreplacing,positioning}
+\usetikzlibrary{calc,decorations.pathreplacing,positioning,decorations.pathmorphing}
 \DeclareOptionX<structmech>{fill}[black]{\def\fillColor{#1}}
 \DeclareOptionX<structmech>{line}[black]{\def\lineColor{#1}}
 \DeclareOptionX<structmech>{node}[black]{\def\nodeColor{#1}}
@@ -382,58 +382,37 @@ EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NewDocumentCommand{\IForceB}{O{\fillColor} m m m m m G{1}}{
 \coordinate(A)at(#2);\coordinate(B)at(#3);
+\pgfmathsetmacro\height{#6*#7};
+\pgfmathsetmacro\lvla{#4*#7};
+\pgfmathsetmacro\lvlb{#5*#7};
 % original cord
 \pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
 \let\Angle\pgfmathresult
+\coordinate(C)at($(A)+(\Angle+90:\lvla)$);
+\coordinate(D)at($(B)+(\Angle-90:\lvlb)$);
 % original length
 \pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
 \pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
 \let\Length\pgfmathresult
 \coordinate(G)at($(A)+(\Angle:\Length/2)$);
-\pgfmathsetmacro\height{#6*#7};
-\pgfmathsetmacro\lvla{#4*#7};
-\pgfmathsetmacro\lvlb{#5*#7};
 \begin{scope}[rotate around={\Angle:(G)},shift={(G)}]
 \draw[#1,fill=#1,fill opacity=\fillOpacity]plot[domain=-.5*\Length:.5*\Length,samples=100](\x,{\height-4./\Length/\Length*\height*\x*\x-\lvla/\Length*\x-\lvlb/\Length*\x+\lvla/2-\lvlb/2})--(B)--(A)--cycle;
 \end{scope}
 \IfStrEq{\showvalue}{on}{
 \StrLeft{#4}{1}[\SA]
-% \IfStrEq{\SA}{-}
-%     {\IfStrEq{\absvalue}{on}
-%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
-%         {\node[NOFILL]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
-%     }
-%     {\node[NOFILL]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
-% \StrLeft{#5}{1}[\SB]
-% \IfStrEq{\SB}{-}
-%     {\IfStrEq{\absvalue}{on}
-%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
-%         {\node[NOFILL]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
-%     }
-%     {\node[NOFILL]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
 \IfStrEq{\SA}{-}
-    {\node[NOFILL,\lineColor]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL,\lineColor]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#4}{-}$};}
+        {\node[NOFILL,\lineColor]at($(C)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#4$};}
+    }
     {\node[NOFILL,\lineColor]at($(C)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#4$};}
-\IfStrEq{#5}{0}{
-	\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};
-}{
-    \StrLeft{#5}{1}[\SB]
-    \IfStrEq{\SB}{-}
-        {\IfStrEq{\absvalue}{on}
-            {\IfStrEq{\SA}{-}
-                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
-                {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
-            }
-            {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
-        }
-        {\IfStrEq{\absvalue}{on}
-            {\IfStrEq{\SA}{-}
-                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$-#5$};}
-                {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
-            }
-            {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
-        }
-}
+\StrLeft{#5}{1}[\SB]
+\IfStrEq{\SB}{-}
+    {\IfStrEq{\absvalue}{on}
+        {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$\StrDel[1]{#5}{-}$};}
+        {\node[NOFILL,\lineColor]at($(D)+(\Angle+90:\Length/8)$)[rotate=\Angle]{$#5$};}
+    }
+    {\node[NOFILL,\lineColor]at($(D)+(\Angle-90:\Length/8)$)[rotate=\Angle]{$#5$};}
 }{}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -461,5 +440,48 @@ EndRotD/.style={start angle=\Angle+90,end angle=\Angle-90,radius=3mm},
 \pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
 \let\Angle\pgfmathresult
 \draw[#1,line width=\lineWidth](A)to[out=\Angle+#4*#6,in=180+\Angle+#5*#6](B);
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 14: Dashpot
+% \Dashpot[1]{2}{3}{4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\Dashpot}{O{\fillColor} m m G{1}}{
+\coordinate(A)at(#2);\coordinate(B)at(#3);
+% original cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\Length\pgfmathresult
+\pgfmathsetmacro\unitL{#4*\Length/10};
+\coordinate(G)at($(A)+(\Angle:\Length/2)$);
+\begin{scope}[rotate around={\Angle:(G)},shift={(G)}]
+\draw[#1,line width=\lineWidth]
+(-\Length/2,0)--(-.5*\unitL,0)
+(0,0)--(\Length/2,0)
+(0,-.5*\unitL)--++(0,\unitL)
+(.5*\unitL,\unitL)--++(-\unitL,0)--++(0,-2*\unitL)--++(\unitL,0);
+\end{scope}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Command 15: Spring
+% \Spring[1]{2}{3}{4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NewDocumentCommand{\Spring}{O{\fillColor} m m G{1}}{
+\coordinate(A)at(#2);\coordinate(B)at(#3);
+% original cord
+\pgfmathanglebetweenpoints{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\let\Angle\pgfmathresult
+\pgfpointdiff{\pgfpointanchor{A}{center}}{\pgfpointanchor{B}{center}}
+\pgfmathparse{veclen(\pgf@x,\pgf@y)/28.45274}
+\let\Length\pgfmathresult
+\pgfmathsetmacro\unitL{#4*\Length/10};
+\coordinate(G)at($(A)+(\Angle:\Length/2)$);
+\begin{scope}[rotate around={\Angle:(G)},shift={(G)}]
+\draw[#1,line width=\lineWidth]
+(-\Length/2,0)--(-2*\unitL,0)
+(2*\unitL,0)--(\Length/2,0);
+\draw[#1,line width=\lineWidth,decorate,decoration={zigzag,segment length=3mm, amplitude=1mm}](-2*\unitL,0)--(2*\unitL,0);
+\end{scope}
 }
 \makeatother

@@ -3,13 +3,13 @@
 \usepackage{amsmath,fancyvrb,float,hyperref,structmech}
 \usepackage{mathpazo}
 \title{structmech\\\large{}A TikZ command set for structural mechanics drawings}
-\author{Theodore Chang\footnote{E-mail: \href{tlcfem@gmail.com}{tlcfem@gmail.com}}\\[2mm]\normalsize{}University of Canterbury, Christchurch, NZ}
-\date{\normalsize{}v1.1 released on \today}
+\author{Theodore Chang\footnote{E-mail: \href{tlcfem@gmail.com}{tlcfem@gmail.com}}\\[2mm]\normalsize{}Humboldt-Universität zu Berlin, Berlin, Germany}
+\date{\normalsize{}v1.2 released on \today}
 \newcommand*{\Highlight}[1]{\colorbox{cyan}{\color{red}\texttt{#1}}}
 \begin{document}
 \maketitle
 \section{Introduction}
-This package is under GPL v3 license and/or later version. Please feel free to redistribute, expand or rewrite the functionality.
+This package is under GPL v3 license and/or later versions. Please feel free to redistribute, extend or rewrite the functionality.
 \section{Options}
 To load the package, please use the following command in the preamble.
 \begin{Verbatim}[frame=single,label=Syntax]
@@ -120,7 +120,7 @@ Here are some examples that use the basic force command to show how the user can
 \item[][7] --- label for the second force drew, available for \Highlight{\#1=2}, leave blank if not required.
 \item[][8] --- label for the third force drew, available for \Highlight{\#1=3}, leave blank if not required.
 \end{enumerate}
-The colours of three components can be configured using global options. Here are a few examples, please find out the order and the difference in the following fourteen examples.
+The colours of the three components can be configured using global options. Here are a few examples, please find out the order and the difference in the following fourteen examples.
 \begin{Verbatim}[frame=single,label=Example]
 \BasicForce{0,0}{3,0}{}
 \BasicForce[1]{5,0}{8,0}{a}[U_1]
@@ -413,7 +413,7 @@ It should be noted that parameter \Highlight{\#6} defines the difference of the 
 \setstructmech{absvalue=on}
 \IForceB[purple]{4,4}{4,0}{3}{-1}{2}{0.5}
 \setstructmech{showvalue=off,opacity=.8}
-\IForceB[cyan]{4,0}{0,0}{1.5}{0}{2}{0.5}
+\IForceB[cyan]{4,0}{0,0}{1.5}{1}{2}{0.5}
 \end{Verbatim}
 \begin{figure}[H]
 \centering
@@ -424,7 +424,7 @@ It should be noted that parameter \Highlight{\#6} defines the difference of the 
 \setstructmech{absvalue=on}
 \IForceB[purple]{4,4}{4,0}{3}{-1}{2}{0.5}
 \setstructmech{showvalue=off,opacity=1}
-\IForceB[cyan]{4,0}{0,0}{1.5}{0}{2}{0.5}
+\IForceB[cyan]{4,0}{0,0}{1.5}{1}{2}{0.5}
 \end{tikzpicture}
 \end{figure}
 \section{Beam Deformation (Perpendicular)}
@@ -481,6 +481,56 @@ Caveat: If the nodal translations are expressed as global values, they can be re
 \draw[line width=.4mm](0,0)rectangle(4,4);
 \BeamDeformR{0,0}{0,4}[50][30]
 \BeamDeformR[blue]{0,4}{4,4}[20][30]{2}
+\end{tikzpicture}
+\end{figure}
+\section{Dashpot}
+\begin{Verbatim}[frame=single,label=Syntax]
+\Dashpot[1]{2}{3}{4}
+\end{Verbatim}
+\begin{enumerate}
+\item[][1] --- optional, line colour.
+\item[]\{2\} --- node coordinates of the lower end in form of \Highlight{$x,y$}.
+\item[]\{3\} --- node coordinates of the higher end in form of \Highlight{$x,y$}.
+\item[]\{4\} --- optional, scale.
+\end{enumerate}
+\begin{Verbatim}[frame=single,label=Example]
+\Dashpot{0,0}{0,3}
+\Dashpot[blue]{2,0}{5,4}{2}
+\setstructmech{linewidth=1mm}
+\Dashpot[purple]{5,0}{10,2}
+\end{Verbatim}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\Dashpot{0,0}{0,3}
+\Dashpot[blue]{2,0}{5,4}{2}
+\setstructmech{linewidth=1mm}
+\Dashpot[purple]{5,0}{10,2}
+\end{tikzpicture}
+\end{figure}
+\section{Spring}
+\begin{Verbatim}[frame=single,label=Syntax]
+\Spring[1]{2}{3}{4}
+\end{Verbatim}
+\begin{enumerate}
+\item[][1] --- optional, line colour.
+\item[]\{2\} --- node coordinates of the lower end in form of \Highlight{$x,y$}.
+\item[]\{3\} --- node coordinates of the higher end in form of \Highlight{$x,y$}.
+\item[]\{4\} --- optional, scale.
+\end{enumerate}
+\begin{Verbatim}[frame=single,label=Example]
+\Spring{0,0}{0,3}
+\Spring[blue]{2,0}{5,4}{2}
+\setstructmech{linewidth=1mm}
+\Spring[purple]{5,0}{10,2}
+\end{Verbatim}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\Spring{0,0}{0,3}
+\Spring[blue]{2,0}{5,4}{2}
+\setstructmech{linewidth=1mm}
+\Spring[purple]{5,0}{10,2}
 \end{tikzpicture}
 \end{figure}
 \end{document}

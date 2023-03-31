@@ -1,5 +1,5 @@
 ```text
-Copyright (C) 2018-2021 Theodore Chang
+Copyright (C) 2018-2023 Theodore Chang
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,15 +17,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 ------
 
-**structmech** is a collection of several TikZ commands that allows users to draw basic elements in material/structural mechanics. With one single command, it is capable of drawing member forces, nodal forces/displacements, various boundary conditions, internal force distributions, etc.
+**structmech** is a collection of TikZ commands that allows users to draw basic elements in material/structural mechanics. With one single command, it is capable of drawing member forces, nodal forces/displacements, various boundary conditions, internal force distributions, etc.
 
-Please feel free to redistribute and/or expand the functionality. Please contact me at:
-
-[tlcfem@gmail.com](mailto:tlcfem@gmail.com)
-
-tlc
-
-04/25/2021
-
-
-
+Please feel free to redistribute and/or extend the functionality.
